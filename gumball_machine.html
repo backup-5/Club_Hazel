@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องสุ่มหมากฝรั่ง Omegaverse</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('https://placehold.co/1920x1080/1a202c/ffffff?text=Fantasy+Omegaverse+Background'); /* Placeholder for a fantasy background */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #e2e8f0; /* Light text color */
+        }
+        .gumball-machine {
+            background-color: rgba(30, 41, 59, 0.9); /* Darker semi-transparent background */
+            border: 4px solid #4a5568; /* Border color */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Stronger shadow */
+        }
+        .gumball-display {
+            min-height: 150px;
+            background-color: #2d3748; /* Darker background for display */
+            border: 2px solid #4a5568;
+        }
+        .spin-button {
+            background-image: linear-gradient(to right, #6a0dad, #8a2be2); /* Purple gradient */
+            transition: all 0.3s ease-in-out;
+        }
+        .spin-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(106, 13, 173, 0.4);
+        }
+        .spin-button:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 4px 8px rgba(106, 13, 173, 0.3);
+        }
+        .spin-button:disabled {
+            background-image: linear-gradient(to right, #525252, #737373);
+            cursor: not-allowed;
+        }
+        .gumball-effect-name {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700; /* font-bold */
+            color: #a78bfa; /* Purple-ish color */
+            text-shadow: 0 0 8px rgba(167, 139, 250, 0.6);
+        }
+        .gumball-effect-description {
+            font-size: 1.125rem; /* text-lg */
+            color: #cbd5e0; /* Lighter gray */
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #a78bfa;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="gumball-machine rounded-xl p-8 max-w-xl w-full text-center">
+        <h1 class="text-5xl font-extrabold mb-8 text-white">
+            เครื่องสุ่มหมากฝรั่ง <span class="text-purple-400">Omegaverse</span>
+        </h1>
+
+        <div class="gumball-display rounded-lg p-6 mb-8 flex flex-col items-center justify-center">
+            <div id="gumball-result" class="text-center">
+                <p class="gumball-effect-name mb-2">กดปุ่มเพื่อสุ่มหมากฝรั่ง!</p>
+                <p class="gumball-effect-description">มาดูกันว่าเอฟเฟกต์อะไรจะปรากฏขึ้น</p>
+            </div>
+            <div id="loading-indicator" class="hidden loading-spinner"></div>
+        </div>
+
+        <button id="spin-button" class="spin-button text-white font-bold py-4 px-8 rounded-full text-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-purple-300 focus:ring-opacity-75">
+            สุ่มหมากฝรั่ง
+        </button>
+    </div>
+
+    <script>
+        const gumballs = [
+            {
+                name: "กลิ่นฟีโรโมนนำพา",
+                description: "หมากฝรั่งนี้จะช่วยเสริมกลิ่นฟีโรโมนธรรมชาติของคุณให้เด่นชัดและน่าดึงดูดยิ่งขึ้น ทำให้คุณเป็นจุดสนใจในทุกที่ที่ไป"
+            },
+            {
+                name: "สัมผัสแห่งความร้อนรุ่ม",
+                description: "เมื่อเคี้ยว หมากฝรั่งจะกระตุ้นความรู้สึกร้อนรุ่มภายในร่างกาย ทำให้คุณเข้าสู่ช่วงฮีท/รัทได้ง่ายขึ้น หรือเพิ่มความรุนแรงของมัน"
+            },
+            {
+                name: "การเปลี่ยนแปลงไดนามิกชั่วคราว",
+                description: "เอฟเฟกต์นี้จะทำให้ไดนามิกของคุณ (อัลฟ่า/เบต้า/โอเมก้า) เปลี่ยนแปลงไปชั่วขณะ อาจเป็นเพียงไม่กี่ชั่วโมงหรือตลอดวัน"
+            },
+            {
+                name: "สายสัมพันธ์แห่งจิตใจ",
+                description: "หมากฝรั่งนี้จะสร้างความผูกพันทางจิตใจกับบุคคลที่คุณคิดถึง ทำให้คุณสามารถรับรู้ความรู้สึกของพวกเขาได้ในระยะเวลาหนึ่ง"
+            },
+            {
+                name: "ยับยั้งสัญชาตญาณ",
+                description: "สำหรับผู้ที่ต้องการควบคุมตนเอง หมากฝรั่งนี้จะช่วยยับยั้งสัญชาตญาณดิบของอัลฟ่าหรือโอเมก้า ทำให้คุณมีสติและควบคุมสถานการณ์ได้ดีขึ้น"
+            },
+            {
+                name: "กลิ่นอายแห่งความสงบ",
+                description: "หมากฝรั่งที่ปล่อยกลิ่นหอมอ่อนโยน ช่วยลดความเครียดและความกังวล สร้างบรรยากาศที่ผ่อนคลายและปลอดภัยรอบตัวคุณ"
+            },
+            {
+                name: "กระตุ้นสัญชาตญาณดิบ",
+                description: "ตรงกันข้ามกับตัวยับยั้ง หมากฝรั่งนี้จะปลุกสัญชาตญาณดิบของคุณให้ตื่นขึ้น ทำให้คุณตอบสนองต่อสิ่งเร้าตามธรรมชาติได้รุนแรงยิ่งขึ้น"
+            },
+            {
+                name: "พลังแห่งการเยียวยา",
+                description: "หมากฝรั่งที่มอบความสามารถในการเยียวยาเล็กน้อย อาจช่วยบรรเทาอาการบาดเจ็บเล็กน้อยหรือความเหนื่อยล้าทางจิตใจ"
+            },
+            {
+                name: "เสียงกระซิบแห่งโชคชะตา",
+                description: "บางครั้ง หมากฝรั่งนี้อาจมอบลางสังหรณ์หรือคำใบ้เล็กๆ น้อยๆ เกี่ยวกับเหตุการณ์ในอนาคตอันใกล้"
+            },
+            {
+                name: "เสน่ห์แห่งคำพูด",
+                description: "เมื่อเคี้ยว หมากฝรั่งจะเพิ่มความน่าเชื่อถือและเสน่ห์ในคำพูดของคุณ ทำให้ผู้อื่นคล้อยตามได้ง่ายขึ้น"
+            }
+        ];
+
+        const spinButton = document.getElementById('spin-button');
+        const gumballResult = document.getElementById('gumball-result');
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+        spinButton.addEventListener('click', () => {
+            // Disable button and show loading
+            spinButton.disabled = true;
+            gumballResult.innerHTML = '<p class="gumball-effect-name mb-2">กำลังสุ่ม...</p><p class="gumball-effect-description">โปรดรอสักครู่</p>';
+            loadingIndicator.classList.remove('hidden');
+
+            setTimeout(() => {
+                // Randomly select a gumball
+                const randomIndex = Math.floor(Math.random() * gumballs.length);
+                const selectedGumball = gumballs[randomIndex];
+
+                // Update display
+                gumballResult.innerHTML = `
+                    <p class="gumball-effect-name mb-2">${selectedGumball.name}</p>
+                    <p class="gumball-effect-description">${selectedGumball.description}</p>
+                `;
+
+                // Hide loading and enable button
+                loadingIndicator.classList.add('hidden');
+                spinButton.disabled = false;
+            }, 2000); // Simulate a 2-second spin
+        });
+    </script>
+</body>
+</html>
